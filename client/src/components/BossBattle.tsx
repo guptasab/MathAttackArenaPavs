@@ -84,13 +84,15 @@ function BossArena() {
 }
 
 export function BossBattle() {
-  const { 
-    questions, 
+  const {
+    questions,
     gradeLevel,
     setPhase,
     addGems,
     gems,
-    incrementRefreshCount
+    incrementRefreshCount,
+    getUnusedQuestions,
+    markQuestionAsUsed
   } = useMathGame();
   
   const { playSuccess, playHit } = useAudio();
@@ -101,8 +103,9 @@ export function BossBattle() {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [battleResult, setBattleResult] = useState<'win' | 'lose' | null>(null);
 
-  // Get next grade level questions (harder)
-  const nextGradeQuestions = questions
+  // Get unused next grade level questions (harder)
+  const unusedQuestions = getUnusedQuestions();
+  const nextGradeQuestions = unusedQuestions
     .filter(q => q.difficulty >= 7)
     .slice(0, 10);
 
@@ -110,10 +113,13 @@ export function BossBattle() {
 
   const handleAnswer = (answer: string) => {
     if (showFeedback || !currentQuestion) return;
-    
+
     const correct = answer === currentQuestion.answer;
     setIsCorrect(correct);
     setShowFeedback(true);
+
+    // Mark question as used when answered
+    markQuestionAsUsed(currentQuestion.id);
 
     if (correct) {
       playSuccess();
@@ -128,7 +134,7 @@ export function BossBattle() {
     setTimeout(() => {
       setShowFeedback(false);
       setIsCorrect(null);
-      
+
       if (bossHealth - (correct ? 1 : 0) <= 0) {
         setBattleResult('win');
         handleBossDefeated();

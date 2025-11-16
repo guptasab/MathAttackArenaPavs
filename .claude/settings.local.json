@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run dev)",
+      "Bash(timeout:*)",
+      "Bash(ping:*)",
+      "Bash(nul)",
+      "Bash(npm install dotenv)",
+      "Bash(taskkill:*)",
+      "Bash(curl -X POST http://localhost:5000/api/questions/generate -H \"Content-Type: application/json\" -d \"{\"\"gradeLevel\"\": 4, \"\"count\"\": 5}\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

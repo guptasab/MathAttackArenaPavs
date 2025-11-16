@@ -49,7 +49,8 @@ interface MathGameState {
   bot: Bot | null;
   isAdminMode: boolean;
   questionRefreshCount: number;
-  
+  usedQuestionIds: Set<string>;
+
   // Actions
   setPhase: (phase: GamePhase) => void;
   setGradeLevel: (level: number) => void;
@@ -67,6 +68,8 @@ interface MathGameState {
   toggleAdminMode: () => void;
   giveInfiniteArmor: () => void;
   incrementRefreshCount: () => void;
+  markQuestionAsUsed: (questionId: string) => void;
+  getUnusedQuestions: () => MathQuestion[];
   resetGame: () => void;
 }
 
@@ -91,6 +94,7 @@ export const useMathGame = create<MathGameState>()(
     bot: null,
     isAdminMode: false,
     questionRefreshCount: 0,
+    usedQuestionIds: new Set<string>(),
     
     setPhase: (phase) => {
       console.log(`[MathGame] Phase transition: ${get().phase} -> ${phase}`);
@@ -180,7 +184,21 @@ export const useMathGame = create<MathGameState>()(
     incrementRefreshCount: () => {
       set((state) => ({ questionRefreshCount: state.questionRefreshCount + 1 }));
     },
-    
+
+    markQuestionAsUsed: (questionId) => {
+      set((state) => {
+        const newUsedIds = new Set(state.usedQuestionIds);
+        newUsedIds.add(questionId);
+        return { usedQuestionIds: newUsedIds };
+      });
+      console.log(`[MathGame] Question marked as used: ${questionId}`);
+    },
+
+    getUnusedQuestions: () => {
+      const state = get();
+      return state.questions.filter(q => !state.usedQuestionIds.has(q.id));
+    },
+
     resetGame: () => {
       set({
         phase: "grade_selection",
@@ -194,7 +212,8 @@ export const useMathGame = create<MathGameState>()(
         playerScore: 0,
         botScore: 0,
         bot: null,
-        questionRefreshCount: 0
+        questionRefreshCount: 0,
+        usedQuestionIds: new Set<string>()
       });
       console.log("[MathGame] Game reset");
     }

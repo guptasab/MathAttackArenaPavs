@@ -1,8 +1,13 @@
 import OpenAI from "openai";
 import { generateFallbackQuestions } from "./sampleQuestions";
 
-// the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Configure Azure OpenAI with default profile
+const openai = new OpenAI({
+  apiKey: process.env.AZURE_OPENAI_API_KEY,
+  baseURL: `${process.env.AZURE_OPENAI_ENDPOINT}/openai/deployments/${process.env.AZURE_OPENAI_DEPLOYMENT_NAME}`,
+  defaultQuery: { "api-version": process.env.AZURE_OPENAI_API_VERSION || "2024-08-01-preview" },
+  defaultHeaders: { "api-key": process.env.AZURE_OPENAI_API_KEY },
+});
 
 export interface MathQuestion {
   id: string;
@@ -50,7 +55,7 @@ IMPORTANT:
 - Ensure difficulty is appropriate for grade ${gradeLevel}`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-5",
+      model: process.env.AZURE_OPENAI_DEPLOYMENT_NAME || "gpt-4",
       messages: [
         {
           role: "system",

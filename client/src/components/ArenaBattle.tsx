@@ -211,10 +211,10 @@ function QuestionOverlay({
 }
 
 export function ArenaBattle() {
-  const { 
-    questions, 
-    playerScore, 
-    botScore, 
+  const {
+    questions,
+    playerScore,
+    botScore,
     bot,
     currentQuestionIndex,
     nextQuestion,
@@ -227,7 +227,9 @@ export function ArenaBattle() {
     setBot,
     gradeLevel,
     currentArmor,
-    equipArmor
+    equipArmor,
+    getUnusedQuestions,
+    markQuestionAsUsed
   } = useMathGame();
   
   const { playSuccess, playHit } = useAudio();
@@ -249,9 +251,10 @@ export function ArenaBattle() {
     console.log("[ArenaBattle] Battle started!");
   }, []);
 
-  // Get questions with difficulty adjustment from armor
+  // Get unused questions with difficulty adjustment from armor
   const difficultyReduction = currentArmor?.difficultyReduction || 0;
-  const battleQuestions = questions
+  const unusedQuestions = getUnusedQuestions();
+  const battleQuestions = unusedQuestions
     .filter(q => q.difficulty <= 8 - difficultyReduction)
     .sort((a, b) => a.difficulty - b.difficulty)
     .slice(0, 10);
@@ -298,10 +301,13 @@ export function ArenaBattle() {
 
   const handleAnswer = (answer: string) => {
     if (showFeedback) return;
-    
+
     const correct = answer === currentQuestion.answer;
     setIsCorrect(correct);
     setShowFeedback(true);
+
+    // Mark question as used when answered
+    markQuestionAsUsed(currentQuestion.id);
 
     if (correct) {
       playSuccess();
@@ -315,7 +321,7 @@ export function ArenaBattle() {
     setTimeout(() => {
       setShowFeedback(false);
       setIsCorrect(null);
-      
+
       if (playerScore + (correct ? 1 : 0) >= 5) {
         handleBattleWin();
       } else if (botScore >= 5) {

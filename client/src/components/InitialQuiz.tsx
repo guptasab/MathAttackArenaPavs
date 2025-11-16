@@ -5,16 +5,17 @@ import { useState, useEffect } from "react";
 import { Brain, CheckCircle, XCircle } from "lucide-react";
 
 export function InitialQuiz() {
-  const { questions, setPhase, addCoins, gradeLevel } = useMathGame();
+  const { questions, setPhase, addCoins, gradeLevel, getUnusedQuestions, markQuestionAsUsed } = useMathGame();
   const { playSuccess, playHit } = useAudio();
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showResult, setShowResult] = useState(false);
 
-  // Get average difficulty question
-  const avgDifficulty = questions.reduce((sum, q) => sum + q.difficulty, 0) / questions.length;
+  // Get average difficulty question from unused questions
+  const unusedQuestions = getUnusedQuestions();
+  const avgDifficulty = unusedQuestions.reduce((sum, q) => sum + q.difficulty, 0) / unusedQuestions.length;
   const targetDifficulty = Math.round(avgDifficulty);
-  const question = questions
+  const question = unusedQuestions
     .sort((a, b) => Math.abs(a.difficulty - targetDifficulty) - Math.abs(b.difficulty - targetDifficulty))[0];
 
   useEffect(() => {
@@ -23,16 +24,19 @@ export function InitialQuiz() {
 
   const handleAnswer = (option: string) => {
     if (showResult) return;
-    
+
     setSelectedAnswer(option);
     const correct = option === question.answer;
     setIsCorrect(correct);
     setShowResult(true);
 
+    // Mark question as used when answered
+    markQuestionAsUsed(question.id);
+
     if (correct) {
       playSuccess();
       console.log("[InitialQuiz] Correct answer!");
-      
+
       setTimeout(() => {
         addCoins(1);
         setPhase("armor_selection");
@@ -40,7 +44,7 @@ export function InitialQuiz() {
     } else {
       playHit();
       console.log("[InitialQuiz] Wrong answer, try again");
-      
+
       setTimeout(() => {
         setSelectedAnswer(null);
         setIsCorrect(null);
