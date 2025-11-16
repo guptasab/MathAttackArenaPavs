@@ -1,73 +1,34 @@
-import { Canvas } from "@react-three/fiber";
-import { Suspense, useEffect, useState } from "react";
-import { KeyboardControls } from "@react-three/drei";
-// import { useAudio } from "./lib/stores/useAudio";
+import { useEffect } from "react";
+import { useMathGame } from "./lib/stores/useMathGame";
 import "@fontsource/inter";
 
-// Import our game components
+// Import game components
+import { GradeSelection } from "./components/GradeSelection";
+import { InitialQuiz } from "./components/InitialQuiz";
+import { ArmorSelection } from "./components/ArmorSelection";
+import { ArenaBattle } from "./components/ArenaBattle";
+import { BossBattle } from "./components/BossBattle";
+import { AdminPanel } from "./components/AdminPanel";
+import { SoundManager } from "./components/SoundManager";
 
-// Define control keys for the game
-// const controls = [
-//   { name: "forward", keys: ["KeyW", "ArrowUp"] },
-//   { name: "backward", keys: ["KeyS", "ArrowDown"] },
-//   { name: "leftward", keys: ["KeyA", "ArrowLeft"] },
-//   { name: "rightward", keys: ["KeyD", "ArrowRight"] },
-//   { name: "punch", keys: ["KeyJ"] },
-//   { name: "kick", keys: ["KeyK"] },
-//   { name: "block", keys: ["KeyL"] },
-//   { name: "special", keys: ["Space"] },
-// ];
-
-// Main App component
 function App() {
-  //const { gamePhase } = useFighting();
-  const [showCanvas, setShowCanvas] = useState(false);
+  const { phase } = useMathGame();
 
-  // Show the canvas once everything is loaded
   useEffect(() => {
-    setShowCanvas(true);
-  }, []);
+    console.log("[App] Current phase:", phase);
+  }, [phase]);
 
   return (
-    <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}/>
-    // {showCanvas && (
-    //   <KeyboardControls map={controls}>
-    //     {gamePhase === 'menu' && <Menu />}
-
-    //     {gamePhase === 'character_selection' && <CharacterSelection />}
-
-    //     {(gamePhase === 'fighting' || gamePhase === 'round_end' || gamePhase === 'match_end') && (
-    //       <>
-    //         <Canvas
-    //           shadows
-    //           camera={{
-    //             position: [0, 2, 8],
-    //             fov: 45,
-    //             near: 0.1,
-    //             far: 1000
-    //           }}
-    //           gl={{
-    //             antialias: true,
-    //             powerPreference: "default"
-    //           }}
-    //         >
-    //           <color attach="background" args={["#111111"]} />
-
-    //           {/* Lighting */}
-    //           <Lights />
-
-    //           <Suspense fallback={null}>
-    //           </Suspense>
-    //         </Canvas>
-    //         <GameUI />
-    //       </>
-    //     )}
-
-    //     <ShortcutManager />
-    //     <SoundManager />
-    //   </KeyboardControls>
-    // )}
-    //</div>
+    <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
+      {phase === "grade_selection" && <GradeSelection />}
+      {phase === "initial_quiz" && <InitialQuiz />}
+      {phase === "armor_selection" && <ArmorSelection />}
+      {phase === "arena_battle" && <ArenaBattle />}
+      {phase === "boss_battle" && <BossBattle />}
+      
+      <AdminPanel />
+      <SoundManager />
+    </div>
   );
 }
 
