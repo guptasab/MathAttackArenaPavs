@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { generateFallbackQuestions } from "./sampleQuestions";
 
 // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -89,7 +90,8 @@ IMPORTANT:
     return questions;
   } catch (error: any) {
     console.error("[OpenAI] Error generating questions:", error);
-    throw new Error(`Failed to generate math questions: ${error.message}`);
+    console.log("[OpenAI] Falling back to sample questions");
+    return generateFallbackQuestions(gradeLevel);
   }
 }
 
