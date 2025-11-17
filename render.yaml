@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: math-attack-arena
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    # No Azure OpenAI needed - uses local question bank!
