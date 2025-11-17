@@ -7,7 +7,11 @@
       "Bash(nul)",
       "Bash(npm install dotenv)",
       "Bash(taskkill:*)",
-      "Bash(curl -X POST http://localhost:5000/api/questions/generate -H \"Content-Type: application/json\" -d \"{\"\"gradeLevel\"\": 4, \"\"count\"\": 5}\")"
+      "Bash(curl -X POST http://localhost:5000/api/questions/generate -H \"Content-Type: application/json\" -d \"{\"\"gradeLevel\"\": 4, \"\"count\"\": 5}\")",
+      "Bash(git add:*)",
+      "Bash(copy serverassetsquestionBank.json clientpublicassetsquestionBank.json)",
+      "Bash(npm run build)",
+      "Bash(npm run preview:*)"
     ],
     "deny": [],
     "ask": []

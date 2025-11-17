@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useMathGame } from "@/lib/stores/useMathGame";
 import { useAudio } from "@/lib/stores/useAudio";
-import { apiRequest } from "@/lib/queryClient";
+import { getQuestionsForGrade } from "@/lib/questionService";
 import { useState } from "react";
 import { Sparkles, Trophy, Star } from "lucide-react";
 
@@ -25,22 +25,17 @@ export function GradeSelection() {
     setIsLoading(true);
     setLoadingGrade(grade);
     playSuccess();
-    
+
     try {
-      console.log(`[GradeSelection] Generating questions for grade ${grade}...`);
-      
-      const response = await apiRequest("POST", "/api/questions/generate", {
-        gradeLevel: grade,
-        count: 100
-      });
-      
-      const data = await response.json();
-      
-      if (data.questions && data.questions.length > 0) {
-        console.log(`[GradeSelection] Loaded ${data.questions.length} questions`);
-        setQuestions(data.questions);
+      console.log(`[GradeSelection] Loading questions for grade ${grade}...`);
+
+      const questions = await getQuestionsForGrade(grade, 100);
+
+      if (questions && questions.length > 0) {
+        console.log(`[GradeSelection] Loaded ${questions.length} questions`);
+        setQuestions(questions);
         setGradeLevel(grade);
-        
+
         setTimeout(() => {
           setPhase("initial_quiz");
         }, 500);
@@ -52,7 +47,7 @@ export function GradeSelection() {
       }
     } catch (error) {
       console.error("[GradeSelection] Error loading questions:", error);
-      alert("Failed to load questions. Please make sure you have set your OPENAI_API_KEY.");
+      alert("Failed to load questions. Please refresh the page and try again.");
       setIsLoading(false);
       setLoadingGrade(null);
     }
